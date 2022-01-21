@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a8c8b85e20.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    </link>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="head" style="display: flex;justify-content: center;background-color: cornflowerblue;align-items: center;">
+        <h1 style="font-family:cursive">MY NEW</h1>
+        <span class="fas fa-search" id="icon" style="line-height:80px; font-size :25px;padding-left:10px"></span>
+        <span class="fas fa-filter" id="icon2"  style="line-height:80px; font-size :25px ;margin-left:50%;position:absolute;"></span>
+
+    </div>
+    <div id="inputdate" style="overflow: hidden;">
+        <p>From</p>
+        <input type="date" id="f">
+        <p>To</p>
+        <input type="date" id="t">
+        <button id="s">Submit</button>
+
+    </div>
+
+    <div id="search-bar"
+        style="display: flex;justify-content: space-between;margin-top:15%;align-items: center;height: 15%;
+         position: fixed ;margin-left: 15%;z-index: 2;width: 70%;">
+        <div style="display: flex; height: 30px;align-items: center;">
+            <p style="margin-right: 2%;margin-bottom: 0;padding-left: 5%; font-weight: bold;">Keywords</p>
+            <input id="input">
+            <button id="bnt">Search</button>
+        </div>
+        <div style="display: flex;flex-direction: column;justify-content:center;margin-right: 3% ;">
+            <span id="iconx" class="fas fa-times"></span>
+        </div>
+    </div>
+    <div id="body" style="overflow:hidden;"></div>
+    <div class="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <script>
+        // Ẩn input date
+        $(document).ready(function () {
+            $("#inputdate").hide();
+        });
+        // Ẩn thanh tìm kiếm
+        $(document).ready(function () {
+            $("#search-bar").hide();
+        });
+        // Tắt mở thanh tìm kiếm
+        $(document).ready(function () {
+            $("#icon").click(function () {
+                $("#search-bar").toggle();
+
+            });
+        });
+        //tắt thanh tìm kiếm bằng x
+        $(document).ready(function () {
+            $("#iconx").click(function () {
+                $("#icon").click();
+            }
+            )
+        });
+        // url trang chủ
+        $(document).ready(function () {
+            var url = "https://gnews.io/api/v4/top-headlines?token=ce3f1e7aac08845feb7dc5bd7d95ca92&lang=en";
+            fetch(url)
+                // dịch json ra java
+                .then(response => response.json())
+                // Khi đã hoàn thành dữ liệu
+                .then(data => {
+
+                    // Ẩn loading
+                    $(document).ready(function () {
+                        $(".lds-ring").hide();
+                    });
+                    let output = ``;
+                    // Xét mỗi articles
+                    data["articles"].forEach(function (x) {
+                        let datex = new Date(x.publishedAt);
+                        let date = datex.toISOString();
+                        console.log(date);
+                        //Thêm các element 
+                        output += `<div id="bodyz">
+                        <div id ="zz" class = " col-md-4 col-xs-4 col-sm-12" style="float:left;"><img src=${x.image}></div>
+                        <div id ="yy" class = "col-md-8 col-xs-8 col-sm-12" style="float:left;">
+                        <a class="title" href="${x.source.url}" target="_blank">${x.title}</a>
+                        <p id="d">${datex}</p>
+                        <p class="ct">${x.content}</p>
+                        </div>
+                        </div>
+                        <hr>`
+                    });
+                    // Xuất out put ra màn hình
+                    document.getElementById("body").innerHTML = output;
+                });
+        });
+        //Chức năng tìm kiếm theo ngày tháng
+        $(document).ready(function () {
+            $("#icon2").click(function () {
+                // ẩn hiện thanh nhập ngày tháng
+                $("#inputdate").toggle();
+                $("#s").click(function () {
+                    $("#inputdate").hide();
+                    let x = new Date($("#f").val()).toISOString();
+                    let y = new Date($("#t").val()).toISOString();
+                    let url3 = "https://gnews.io/api/v4/search?q=example&from=" + x + "&to=" + y + "&lang=en&sortby=publishedAt&token=ce3f1e7aac08845feb7dc5bd7d95ca92";
+                    fetch(url3)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            let output = ``;
+                            data["articles"].forEach(function (x) {
+                                let datex = new Date(x.publishedAt);
+                                let date = datex.toISOString();
+                                output += `<div id="bodyz">
+                     <div id ="zz" class = " col-md-4 col-xs-4 col-sm-12" style="float:left;"><img src=${x.image}></div>
+                     <div id ="yy" class = "col-md-8 col-xs-8 col-sm-12" style="float:left;">
+                    <a class="title" href="${x.source.url}" target="_blank">${x.title}</a>
+                    <p id="d">${datex}</p>
+                    <p class="ct">${x.content}</p>
+                    </div>
+                    </div>
+                    <hr>
+                    `
+                                document.getElementById("body").innerHTML = output;
+
+                            });
+                        });
+                });
+            });
+        });
+        //Chức năng tìm kiếm
+        $(document).ready(function () {
+            $("#bnt").click(function () {
+                // gán search bằng giá trị trong ô tìm kiếm
+                let search = $("#input").val();
+                let url2 = "https://gnews.io/api/v4/search?q=" + search + "&token=ce3f1e7aac08845feb7dc5bd7d95ca92&lang=en";
+                fetch(url2)
+                //như trên trang chủ
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        let output = ``;
+                        data["articles"].forEach(function (x) {
+                            let datex = new Date(x.publishedAt);
+                            let date = datex.toISOString();
+                            output += `<div id="bodyz">
+                     <div id ="zz" class = " col-md-4 col-xs-4 col-sm-12" style="float:left;"><img src=${x.image}></div>
+                     <div id ="yy" class = "col-md-8 col-xs-8 col-sm-12" style="float:left;">
+                    <a class="title" href="${x.source.url}" target="_blank">${x.title}</a>
+                    <p id="d">${datex}</p>
+                    <p class="ct">${x.content}</p>
+                    </div>
+                    </div>
+                    <hr>
+                    `
+                            document.getElementById("body").innerHTML = output;
+                        });
+                        $("#input").val("");
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
